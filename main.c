@@ -288,7 +288,14 @@ void payment(int *typePayment, float *money, float price1, float price2, float p
         }
     }
     // premio di 50€ ogni volta che vengono venduti 100 biglietti
-    while (*countTicket - 100 >= 0)
+    int j = 0;
+    if (j > 0)
+    {
+        *countTicket = *countTicket - ticket_number;
+    }
+    j++;
+    
+     while (*countTicket - 100 >= 0)
     {
         *rexultProvvigione += 50;
         *countTicket -= 100;
@@ -340,8 +347,9 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
     {
         if (*ticket_number <= *max_ticket1)
         {
+            *max_ticket1 = *max_ticket1 - *ticket_number;
         }
-        else
+        else if (*ticket_number > *max_ticket1)
         {
             printf(" ____________________________________________________________________________________\n");
             printf("|                                                                                    |\n");
@@ -355,8 +363,10 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
     {
         if (*ticket_number <= *max_ticket2)
         {
+            *max_ticket2 = *max_ticket2 - *ticket_number;
+
         }
-        else
+        else if (*ticket_number > *max_ticket2)
         {
             printf(" ____________________________________________________________________________________\n");
             printf("|                                                                                    |\n");
@@ -370,8 +380,10 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
     {
         if (*ticket_number <= *max_ticket3)
         {
+            *max_ticket3 = *max_ticket3 - *ticket_number;
+
         }
-        else
+        else if (*ticket_number > *max_ticket3)
         {
             printf(" ____________________________________________________________________________________\n");
             printf("|                                                                                    |\n");
@@ -382,7 +394,7 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
         break;
     }
     }
-    *countTicket += *ticket_number;
+    *countTicket = *ticket_number;
 }
 
 // autenticazione dell'admin
@@ -1011,9 +1023,11 @@ int main()
             printf("|                                                      |\n");
             printf("|                 Selezionare l'evento:                |\n");
             printf("|______________________________________________________|\n");
+            
             printf("evento 1: %s --> disponibile\n", event1);
             printf("evento 2: %s --> ingressi esauriti\n", event2);
             printf("evento 3: %s --> ingressi esauriti\n", event3);
+            
             scanf("%d", &chooseEvent);
             while (chooseEvent != 1)
             {
