@@ -288,7 +288,7 @@ void payment(int *typePayment, float *money, float price1, float price2, float p
         }
     }
     // premio di 50€ ogni volta che vengono venduti 100 biglietti
-    while (*countTicket % 100 == 0 && *countTicket > 0)
+    while (*countTicket - 100 >= 0)
     {
         *rexultProvvigione += 50;
         *countTicket -= 100;
