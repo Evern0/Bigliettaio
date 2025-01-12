@@ -60,7 +60,7 @@ void selezione_utente(int *tipo_utente)
 
 // selezione tipo di biglietto
 
-void ticket_type(int *ticket, float price1, float price2, float price3)
+void ticket_type(int *ticket, float price1, float price2, float price3, int max_ticket1, int max_ticket2, int max_ticket3)
 {
     printf(" ____________________________________________________________________________________\n");
     printf("|                                                                                    |\n");
@@ -73,10 +73,9 @@ void ticket_type(int *ticket, float price1, float price2, float price3)
     printf("|   |________________|            |________________|            |________________|   |\n");
     printf("|                                                                                    |\n");
     printf("|____________________________________________________________________________________|\n");
-    printf("1) euro %f\n", price1);
-    printf("2) euro %f\n", price2);
-    printf("3) euro %f\n", price3);
-
+    printf("1) euro %f		disponibilita': %d\n", price1, max_ticket1);
+    printf("2) euro %f		disponibilita': %d\n", price2, max_ticket2);
+    printf("3) euro %f		disponibilita': %d\n", price3, max_ticket3);
     scanf("%d", ticket);
 
     // se il biglietto selezionato non esiste lo richiede fino a quando non è uno dei tre selezionabili
@@ -93,15 +92,15 @@ void ticket_type(int *ticket, float price1, float price2, float price3)
         printf("|   |________________|            |________________|            |________________|   |\n");
         printf("|                                                                                    |\n");
         printf("|____________________________________________________________________________________|\n");
-        printf("1) euro %f\n", price1);
-        printf("2) euro %f\n", price2);
-        printf("3) euro %f\n", price3);
+        printf("1) euro %f		disponibilita': %d\n", price1, max_ticket1);
+        printf("2) euro %f		disponibilita': %d\n", price2, max_ticket2);
+        printf("3) euro %f		disponibilita': %d\n", price3, max_ticket3);
 
         scanf("%d", ticket);
     }
 }
 // funzione per il pagamento
-void payment(int *typePayment, float *money, float price1, float price2, float price3, int ticket_number, int ticket, int pinCard, float *amount, float provvigione1, float provvigione2, float provvigione3, float *rexultProvvigione, int *countTicket)
+int payment(int *typePayment, float *money, float price1, float price2, float price3, int ticket_number, int ticket, int pinCard, float *amount, float provvigione1, float provvigione2, float provvigione3, float *rexultProvvigione, int *countTicket, int *max_ticket1, int *max_ticket2, int *max_ticket3)
 {
     int nextPayment = 0;
     while (nextPayment == 0)
@@ -241,9 +240,8 @@ void payment(int *typePayment, float *money, float price1, float price2, float p
             printf("|   hai 3 tentativi                   |\n");
             printf("|_____________________________________|\n");
             scanf("%d", &pinCardInsert);
-            while (pinCardInsert != pinCard && try > 1)
+            while (pinCardInsert != pinCard && try >= 1)
             {
-                try--;
                 printf(" _____________________________________\n");
                 printf("|                                     |\n");
                 printf("|      pin non valido, riprovare      |\n");
@@ -251,15 +249,35 @@ void payment(int *typePayment, float *money, float price1, float price2, float p
                 printf("|      tentativi rimasti %d            |\n", try);
                 printf("|_____________________________________|\n");
                 scanf("%d", &pinCardInsert);
+                try--;
             }
 
-            if (try <= 1)
+            if (try <= 0)
             {
                 printf(" _____________________________________\n");
                 printf("|                                     |\n");
                 printf("|           carta bloccata            |\n");
                 printf("|_____________________________________|\n");
-                break;
+
+                switch (ticket)
+                {
+                case 1:
+                {
+                    *max_ticket1 += ticket_number;
+                    break;
+                }
+                case 2:
+                {
+                    *max_ticket2 += ticket_number;
+                    break;
+                }
+                case 3:
+                {
+                    *max_ticket3 += ticket_number;
+                    break;
+                }
+                }
+                return 1;
             }
 
             printf(" ___________________________________________\n");
@@ -322,7 +340,7 @@ void payment(int *typePayment, float *money, float price1, float price2, float p
 }
 
 // selezione della quantità del biglietto
-void ticket_amount(int *ticket_number, int *max_ticket1, int *max_ticket2, int *max_ticket3, int *ticket, int *countTicket)
+int ticket_amount(int *ticket_number, int *max_ticket1, int *max_ticket2, int *max_ticket3, int *ticket, int *countTicket)
 {
 chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità del biglietto
     printf(" ____________________________________________________________________________________\n");
@@ -355,7 +373,7 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
             printf("|                                                                                    |\n");
             printf("|               quantitativo biglietti insufficiente, rilesezionare:                 |\n");
             printf("|____________________________________________________________________________________|\n");
-            goto chiediBiglietti;
+            return 1;
         }
         break;
     }
@@ -372,7 +390,7 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
             printf("|                                                                                    |\n");
             printf("|               quantitativo biglietti insufficiente, rilesezionare:                 |\n");
             printf("|____________________________________________________________________________________|\n");
-            goto chiediBiglietti;
+            return 1;
         }
         break;
     }
@@ -389,11 +407,13 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
             printf("|                                                                                    |\n");
             printf("|               quantitativo biglietti insufficiente, rilesezionare:                 |\n");
             printf("|____________________________________________________________________________________|\n");
-            goto chiediBiglietti;
+            return 1;
         }
         break;
     }
     }
+    
+
     *countTicket = *ticket_number;
 }
 
@@ -1024,9 +1044,19 @@ int main()
             printf("|                 Selezionare l'evento:                |\n");
             printf("|______________________________________________________|\n");
             
-            printf("evento 1: %s --> disponibile\n", event1);
-            printf("evento 2: %s --> ingressi esauriti\n", event2);
-            printf("evento 3: %s --> ingressi esauriti\n", event3);
+            if (max_ticket1 < 1 && max_ticket2 < 1 && max_ticket3 < 1)
+            {
+            	printf("evento 1: %s --> ingressi esauriti\n", event1);
+            	printf("evento 2: %s --> ingressi esauriti\n", event2);
+            	printf("evento 3: %s --> ingressi esauriti\n", event3);	
+            	goto startCode;
+			}
+			else if (max_ticket1 >= 1 || max_ticket2 >= 1 || max_ticket3 >=1)
+			{
+				printf("evento 1: %s --> disponibile\n", event1);
+            	printf("evento 2: %s --> ingressi esauriti\n", event2);
+            	printf("evento 3: %s --> ingressi esauriti\n", event3);
+			}
             
             scanf("%d", &chooseEvent);
             while (chooseEvent != 1)
@@ -1165,8 +1195,9 @@ int main()
                 printf("|____________________________________________________________________________________|\n");
                 goto startCode;
             }
-
-            ticket_type(&ticket, price1, price2, price3);
+            
+            askTicket:
+            ticket_type(&ticket, price1, price2, price3, max_ticket1, max_ticket2, max_ticket3);
             printf(" __________________________________________\n");
             printf("|                                          |\n");
             printf("|    se vuoi proseguire premi 1            |\n");
@@ -1191,7 +1222,10 @@ int main()
                 continue;
             }
 
-            ticket_amount(&ticket_number, &max_ticket1, &max_ticket2, &max_ticket3, &next, &countTicket);
+            if(ticket_amount(&ticket_number, &max_ticket1, &max_ticket2, &max_ticket3, &ticket, &countTicket) == 1)
+            {
+                goto askTicket;
+            }
 
             printf(" __________________________________________\n");
             printf("|                                          |\n");
@@ -1214,10 +1248,32 @@ int main()
             }
             if (next == 0)
             {
+                switch (ticket)
+                {
+                case 1:
+                {
+                    max_ticket1 += ticket_number;
+                    break;
+                }
+                case 2:
+                {
+                    max_ticket2 += ticket_number;
+                    break;
+                }
+                case 3:
+                {
+                    max_ticket3 += ticket_number;
+                    break;
+                }
+                }
+                
                 continue;
             }
         }
-        payment(&typePayment, &money, price1, price2, price3, ticket_number, ticket, pinCard, &amount, provvigione1, provvigione2, provvigione3, &rexultProvvigione, &countTicket);
+        if(payment(&typePayment, &money, price1, price2, price3, ticket_number, ticket, pinCard, &amount, provvigione1, provvigione2, provvigione3, &rexultProvvigione, &countTicket, &max_ticket1, &max_ticket2, &max_ticket3) == 1)
+        {
+            goto startCode;
+        }
         stampaBiglietto(ticket, countTicket);
         goto startCode;
     }
