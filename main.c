@@ -100,14 +100,14 @@ void ticket_type(int *ticket, float price1, float price2, float price3, int max_
     }
 }
 // funzione per il pagamento
-int payment(int *typePayment, float *money, float price1, float price2, float price3, int ticket_number, int ticket, int pinCard, float *amount, float provvigione1, float provvigione2, float provvigione3, float *rexultProvvigione, int *countTicket, int *max_ticket1, int *max_ticket2, int *max_ticket3)
+int payment(int *typePayment, float *money, float price1, float price2, float price3, int ticket_number, int ticket, char pinCard[], float *amount, float provvigione1, float provvigione2, float provvigione3, float *rexultProvvigione, int *countTicket, int *max_ticket1, int *max_ticket2, int *max_ticket3)
 {
     int nextPayment = 0;
     while (nextPayment == 0)
     {
         float carry = 0;
         float moneyPlus = 0;
-        int pinCardInsert = 0;
+        char pinCardInsert[1000];
         int try = 3;
 
         printf(" ___________________________________________________________________\n");
@@ -239,8 +239,8 @@ int payment(int *typePayment, float *money, float price1, float price2, float pr
             printf("|   carta inserita, digitare il pin   |\n");
             printf("|   hai 3 tentativi                   |\n");
             printf("|_____________________________________|\n");
-            scanf("%d", &pinCardInsert);
-            while (pinCardInsert != pinCard && try >= 1)
+            gets(pinCardInsert);
+            while (strcmp(pinCardInsert, pinCard) != 0 && try >= 1)
             {
                 printf(" _____________________________________\n");
                 printf("|                                     |\n");
@@ -248,11 +248,11 @@ int payment(int *typePayment, float *money, float price1, float price2, float pr
                 printf("|                                     |\n");
                 printf("|      tentativi rimasti %d            |\n", try);
                 printf("|_____________________________________|\n");
-                scanf("%d", &pinCardInsert);
+                gets(pinCardInsert);
                 try--;
             }
 
-            if (try <= 0)
+            if (try <= 0 && strcmp(pinCardInsert, pinCard) != 0)
             {
                 printf(" _____________________________________\n");
                 printf("|                                     |\n");
@@ -295,7 +295,7 @@ int payment(int *typePayment, float *money, float price1, float price2, float pr
                 printf("|                                          |\n");
                 printf("|    se vuoi proseguire premi 1            |\n");
                 printf("|                                          |\n");
-                printf("|    se vuoi ritornare all'inizio premi 0  |\n");
+                printf("|    se vuoi cambiare metodo premi 0       |\n");
                 printf("|__________________________________________|\n");
                 scanf("%d", &nextPayment);
             }
@@ -420,19 +420,19 @@ chiediBiglietti: // etichetta per tornare indietro alla selezione della quatità
 // autenticazione dell'admin
 void adminAutentication(char adminPasswordString[])
 {
-    char autenticationString[] = "aaaaa0000";
+    char autenticationString[1000];
     printf(" ____________________________________________________________________\n");
     printf("|                                                                    |\n");
     printf("|                  inserire la pasword dell'admin                    |\n");
     printf("|____________________________________________________________________|\n");
-    scanf("%s", autenticationString);
+    gets(autenticationString);
     while (strcmp(autenticationString, adminPasswordString) != 0)
     {
         printf(" ____________________________________________________________________\n");
         printf("|                                                                    |\n");
         printf("|                  password errata, riprovare                        |\n");
         printf("|____________________________________________________________________|\n");
-        scanf("%s", autenticationString);
+        gets(autenticationString);
     }
 }
 
@@ -505,40 +505,77 @@ void adminEvents(char event1[], char event2[], char event3[], float *price1, flo
     printf("|  biglietto 1  |\n");
     printf("|_______________|\n");
     scanf("%f", price1);
-    while (*price1 < 0)
+    while (*price1 < 0 || *price1 > 1000000)
     {
-        printf(" ______________________________________\n");
-        printf("|                                      |\n");
-        printf("|  il prezzo non puo' essere negativo  |\n");
-        printf("|______________________________________|\n");
-        scanf("%f", price1);
+        if(*price1 > 1000000)
+        {
+            printf(" ______________________________________\n");
+            printf("|                                      |\n");
+            printf("|     il prezzo e' troppo alto :)      |\n");
+            printf("|______________________________________|\n");
+            scanf("%f", price1);
+        }
+        else
+        {
+            printf(" ______________________________________\n");
+            printf("|                                      |\n");
+            printf("|  il prezzo non puo' essere negativo  |\n");
+            printf("|______________________________________|\n");
+            scanf("%f", price1);
+        }
     }
+    
     printf(" _______________\n");
     printf("|               |\n");
     printf("|  biglietto 2  |\n");
     printf("|_______________|\n");
     scanf("%f", price2);
-    while (*price2 < 0)
+    while (*price2 < 0 || *price2 > 1000000)
     {
-        printf(" ______________________________________\n");
-        printf("|                                      |\n");
-        printf("|  il prezzo non puo' essere negativo  |\n");
-        printf("|______________________________________|\n");
-        scanf("%f", price2);
+        if(*price2 > 1000000)
+        {
+            printf(" ______________________________________\n");
+            printf("|                                      |\n");
+            printf("|     il prezzo e' troppo alto :)      |\n");
+            printf("|______________________________________|\n");
+            scanf("%f", price2);
+        }
+        else
+        {
+            printf(" ______________________________________\n");
+            printf("|                                      |\n");
+            printf("|  il prezzo non puo' essere negativo  |\n");
+            printf("|______________________________________|\n");
+            scanf("%f", price2);
+        }
     }
+
     printf(" _______________\n");
     printf("|               |\n");
     printf("|  biglietto 3  |\n");
     printf("|_______________|\n");
     scanf("%f", price3);
-    while (*price3 < 0)
+    while (*price3 < 0 || *price3 > 1000000)
     {
-        printf(" ______________________________________\n");
-        printf("|                                      |\n");
-        printf("|  il prezzo non puo' essere negativo  |\n");
-        printf("|______________________________________|\n");
-        scanf("%f", price3);
+        if(*price3 > 1000000)
+        {
+            printf(" ______________________________________\n");
+            printf("|                                      |\n");
+            printf("|     il prezzo e' troppo alto :)      |\n");
+            printf("|______________________________________|\n");
+            scanf("%f", price3);
+        }
+        else
+        {
+            printf(" ______________________________________\n");
+            printf("|                                      |\n");
+            printf("|  il prezzo non puo' essere negativo  |\n");
+            printf("|______________________________________|\n");
+            scanf("%f", price3);
+        }
     }
+
+    
     printf(" ____________________________________________________________________________________\n");
     printf("|                                                                                    |\n");
     printf("|         inserire il quantitativo disponibile per ciascun tipo di biglietto         |\n");
@@ -555,40 +592,77 @@ void adminEvents(char event1[], char event2[], char event3[], float *price1, flo
     printf("|  biglietto 1  |\n");
     printf("|_______________|\n");
     scanf("%d", maxTicket1);
-    while(*maxTicket1 <=0)
+    while(*maxTicket1 <=0 || *maxTicket1 > 1000000)
     {
-        printf(" ___________________________________________________\n");
-        printf("|                                                   |\n");
-        printf("|  il numero di biglietti non puo' essere negativo  |\n");
-        printf("|___________________________________________________|\n");
-        scanf("%d", maxTicket1);
+        if(*maxTicket1 > 1000000)
+        {
+            printf(" ___________________________________________________\n");
+            printf("|                                                   |\n");
+            printf("|      quantitativo di biglietti troppo alto        |\n");
+            printf("|___________________________________________________|\n");
+            scanf("%d", maxTicket1);
+        }
+        else
+        {
+            printf(" ___________________________________________________\n");
+            printf("|                                                   |\n");
+            printf("|  il numero di biglietti non puo' essere negativo  |\n");
+            printf("|___________________________________________________|\n");
+            scanf("%d", maxTicket1);
+        }
     }
+    
+
     printf(" _______________\n");
     printf("|               |\n");
     printf("|  biglietto 2  |\n");
     printf("|_______________|\n");
     scanf("%d", maxTicket2);
-    while(*maxTicket2 <=0)
+    while(*maxTicket2 <=0 || *maxTicket2 > 1000000)
     {
-        printf(" ___________________________________________________\n");
-        printf("|                                                   |\n");
-        printf("|  il numero di biglietti non puo' essere negativo  |\n");
-        printf("|___________________________________________________|\n");
-        scanf("%d", maxTicket2);
+        if(*maxTicket2 > 1000000)
+        {
+            printf(" ___________________________________________________\n");
+            printf("|                                                   |\n");
+            printf("|      quantitativo di biglietti troppo alto        |\n");
+            printf("|___________________________________________________|\n");
+            scanf("%d", maxTicket2);
+        }
+        else
+        {
+            printf(" ___________________________________________________\n");
+            printf("|                                                   |\n");
+            printf("|  il numero di biglietti non puo' essere negativo  |\n");
+            printf("|___________________________________________________|\n");
+            scanf("%d", maxTicket2);
+        }
     }
+    
     printf(" _______________\n");
     printf("|               |\n");
     printf("|  biglietto 3  |\n");
     printf("|_______________|\n");
     scanf("%d", maxTicket3);
-    while(*maxTicket3 <=0)
+    while(*maxTicket3 <=0 || *maxTicket3 > 1000000)
     {
-        printf(" ___________________________________________________\n");
-        printf("|                                                   |\n");
-        printf("|  il numero di biglietti non puo' essere negativo  |\n");
-        printf("|___________________________________________________|\n");
-        scanf("%d", maxTicket3);
+        if(*maxTicket3 > 1000000)
+        {
+            printf(" ___________________________________________________\n");
+            printf("|                                                   |\n");
+            printf("|      quantitativo di biglietti troppo alto        |\n");
+            printf("|___________________________________________________|\n");
+            scanf("%d", maxTicket3);
+        }
+        else
+        {
+            printf(" ___________________________________________________\n");
+            printf("|                                                   |\n");
+            printf("|  il numero di biglietti non puo' essere negativo  |\n");
+            printf("|___________________________________________________|\n");
+            scanf("%d", maxTicket3);
+        }
     }
+    
 // lettura della data di inizio e fine della prevendita
 inizioPrevendita:
     printf(" ____________________________________________________________________________________\n");
@@ -919,7 +993,7 @@ int main()
     float money = 0;
     float amount = 0;
     // pin carta
-    int pinCard = 12345;
+    char pinCard[] = "12345";
 
     // password admin
     char adminPasswordString[] = "admin1234";
@@ -1046,14 +1120,14 @@ int main()
             
             if (max_ticket1 < 1 && max_ticket2 < 1 && max_ticket3 < 1)
             {
-            	printf("evento 1: %s --> ingressi esauriti\n", event1);
+            	printf("evento 1: %s --> ingressi esauriti      %d/%d/%d   -   %d/%d/%d\n", event1, start_date.day, start_date.month, start_date.year, end_date.day, end_date.month, end_date.year);
             	printf("evento 2: %s --> ingressi esauriti\n", event2);
             	printf("evento 3: %s --> ingressi esauriti\n", event3);	
             	goto startCode;
 			}
 			else if (max_ticket1 >= 1 || max_ticket2 >= 1 || max_ticket3 >=1)
 			{
-				printf("evento 1: %s --> disponibile\n", event1);
+				printf("evento 1: %s --> disponibile        %d/%d/%d   -   %d/%d/%d\n", event1, start_date.day, start_date.month, start_date.year, end_date.day, end_date.month, end_date.year);
             	printf("evento 2: %s --> ingressi esauriti\n", event2);
             	printf("evento 3: %s --> ingressi esauriti\n", event3);
 			}
@@ -1065,7 +1139,7 @@ int main()
                 printf("|                                                      |\n");
                 printf("|    Evento selezionato non disponibile, riprovare:    |\n");
                 printf("|______________________________________________________|\n");
-                printf("evento 1: %s --> disponibile\n", event1);
+                printf("evento 1: %s --> disponibile        %d/%d/%d   -   %d/%d/%d\n", event1, start_date.day, start_date.month, start_date.year, end_date.day, end_date.month, end_date.year);
                 printf("evento 2: %s --> ingressi esauriti\n", event2);
                 printf("evento 3: %s --> ingressi esauriti\n", event3);
                 scanf("%d", &chooseEvent);
